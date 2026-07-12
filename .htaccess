@@ -1,0 +1,26 @@
+# Adinexis CRM — security hardening for shared/cPanel hosting
+
+# Disable directory listing everywhere in this app
+Options -Indexes
+
+# Block direct web access to the includes/ folder (DB credentials, session logic, etc.)
+<IfModule mod_alias.c>
+  RedirectMatch 403 ^/?includes/.*$
+</IfModule>
+
+# Block access to schema.sql and any stray .sql files
+<FilesMatch "\.sql$">
+  Require all denied
+</FilesMatch>
+
+# Prevent .git or backup files from being served if accidentally uploaded
+<FilesMatch "(^\.git|\.bak$|~$)">
+  Require all denied
+</FilesMatch>
+
+# Basic security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Adinexis CRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="assets/logo-icon.png">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="assets/logo-icon.png" alt="Adinexis">
+      <div>
+        <div class="login-logo-text">ADINEXIS</div>
+        <div class="login-logo-sub">CRM PLATFORM</div>
+      </div>
+    </div>
+    <div class="login-title">Sign in</div>
+    <div class="login-sub">Use your Adinexis CRM account to continue.</div>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="form-group"><label>Username</label><input type="text" id="li_username" required autocomplete="username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="li_password" required autocomplete="current-password"></div>
+      <button type="submit" class="btn btn-primary login-submit" id="loginBtn">Sign In</button>
+    </form>
+    <div class="login-footnote">No account yet? An administrator needs to create one, or run <span class="mono">setup.php</span> once for the first admin account.</div>
+  </div>
+</div>
+
+<!-- APP LOADER -->
+<div id="appLoader" style="display:none;">
+  <div class="spinner"></div>
+  <div style="font-size:13px; color:var(--text-400);">Loading your workspace…</div>
+</div>
+
+<div id="app" style="display:none;">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-row">
+      <div class="logo-mark"><img src="assets/logo-icon.png" alt="Adinexis"></div>
+      <div>
+        <div class="logo-text">ADINEXIS</div>
+        <div class="logo-sub">CRM PLATFORM</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-view="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span>Dashboard</span>
+    </div>
+
+    <div class="nav-section-label">Sales</div>
+    <div class="nav-item" data-view="addlead">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Add Lead</span>
+    </div>
+    <div class="nav-item" data-view="pipeline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg>
+      <span>Pipeline</span>
+      <span class="nav-count" id="countLeads">0</span>
+    </div>
+    <div class="nav-item" data-view="clients">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><circle cx="17.5" cy="8.5" r="2.6"/><path d="M16 13.7c2.7.3 4.9 2.6 4.9 5.6"/></svg>
+      <span>Clients</span>
+      <span class="nav-count" id="countClients">0</span>
+    </div>
+
+    <div class="nav-section-label">Delivery</div>
+    <div class="nav-item" data-view="projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v-1M16 4v-1"/></svg>
+      <span>Projects</span>
+      <span class="nav-count" id="countProjects">0</span>
+    </div>
+    <div class="nav-item" data-view="tickets">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v6a3 3 0 000 6v2H4v-2a3 3 0 000-6V5z"/></svg>
+      <span>Support</span>
+      <span class="nav-count" id="countTickets">0</span>
+    </div>
+
+    <div class="nav-section-label">Trust & Audit</div>
+    <div class="nav-item" data-view="ledger">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/></svg>
+      <span>Ledger</span>
+      <span class="nav-count" id="countLedger">0</span>
+    </div>
+    <div class="nav-item" data-view="team">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><path d="M17 7a3 3 0 010 6M21 20c0-3-2-5-4.5-5.8"/></svg>
+      <span>Team</span>
+      <span class="nav-count" id="countTeam">0</span>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div class="user-meta">
+          <div class="user-name" id="userNameLabel">—</div>
+          <div class="user-role" id="userRoleLabel">—</div>
+        </div>
+        <div class="logout-link" id="logoutBtn" title="Sign out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </div>
+      </div>
+      <div style="font-size:11px; color:#4E5975;">Connected to MySQL on adinexis.com</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="viewTitle">Dashboard</h1>
+        <div class="subtitle" id="viewSubtitle">Snapshot of sales, delivery and support</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="search-box" id="searchBox" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="Search…">
+        </div>
+        <button class="btn btn-ghost" id="exportBtn" title="Download a full JSON backup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Export
+        </button>
+        <button class="btn btn-primary" id="primaryAddBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          <span id="primaryAddLabel">Add Lead</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card c-blue">
+            <div class="stat-label">OPEN PIPELINE VALUE</div>
+            <div class="stat-value mono" id="statPipelineValue">$0</div>
+            <div class="stat-sub" id="statPipelineCount">0 active leads</div>
+          </div>
+          <div class="stat-card c-green">
+            <div class="stat-label">WON THIS MONTH</div>
+            <div class="stat-value mono" id="statWonValue">$0</div>
+            <div class="stat-sub" id="statWonCount">0 deals closed</div>
+          </div>
+          <div class="stat-card c-amber">
+            <div class="stat-label">PAYMENTS PENDING</div>
+            <div class="stat-value mono" id="statPaymentPending">$0</div>
+            <div class="stat-sub" id="statPaymentPendingSub">0 invoices outstanding</div>
+          </div>
+          <div class="stat-card c-red">
+            <div class="stat-label">OPEN TICKETS</div>
+            <div class="stat-value mono" id="statTickets">0</div>
+            <div class="stat-sub" id="statTicketsSub">0 marked urgent</div>
+          </div>
+        </div>
+
+        <div style="margin:-8px 0 20px; font-size:12.5px; color:var(--text-400); display:flex; align-items:center; gap:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span id="ledgerCountNote">0</span>&nbsp;blocks recorded in the MySQL-backed audit ledger —
+          <a href="#" onclick="switchView('ledger'); return false;" style="color:var(--blue-600); font-weight:600; text-decoration:none;">view ledger →</a>
+        </div>
+
+        <div class="dash-grid">
+          <div class="panel">
+            <div class="panel-title">Recent activity</div>
+            <div class="panel-desc">Latest updates across sales, projects and support</div>
+            <div id="activityFeed"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Pipeline by stage</div>
+            <div class="panel-desc">Lead distribution across the sales process</div>
+            <div id="pipelineMini"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD LEAD -->
+      <div class="view" id="view-addlead">
+        <div class="panel" style="max-width:640px;">
+          <div class="panel-title">New lead</div>
+          <div class="panel-desc">Capture a new opportunity and drop it straight into the pipeline.</div>
+          <form id="addLeadForm">
+            <div class="form-row">
+              <div class="form-group"><label>Contact name</label><input type="text" id="al_name" placeholder="Jordan Blake" required></div>
+              <div class="form-group"><label>Company</label><input type="text" id="al_company" placeholder="Company name"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email</label><input type="email" id="al_email" placeholder="name@company.com"></div>
+              <div class="form-group"><label>Deal value ($)</label><input type="number" id="al_value" placeholder="15000"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Stage</label><select id="al_stage"></select></div>
+              <div class="form-group"><label>Payment status</label>
+                <select id="al_payment"><option value="pending">Pending</option><option value="done">Done</option></select>
+              </div>
+            </div>
+            <div class="form-group"><label>Notes</label><textarea id="al_notes" placeholder="Context on this deal…"></textarea></div>
+            <div class="modal-actions" style="justify-content:flex-start;">
+              <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+                Add Lead
+              </button>
+              <button type="button" class="btn btn-ghost" onclick="document.getElementById('addLeadForm').reset()">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- LEDGER -->
+      <div class="view" id="view-ledger">
+        <div class="panel" style="margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
+            <div>
+              <div class="panel-title">Tamper-proof record log</div>
+              <div class="panel-desc" style="margin-bottom:0;">Every action is chained with SHA-256 hashes, computed and verified server-side in MySQL. Each block also records which team member performed it.</div>
+            </div>
+            <button class="btn btn-primary" id="verifyChainBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
+              Verify Chain
+            </button>
+          </div>
+          <div id="verifyResult" style="margin-top:14px; display:none;"></div>
+        </div>
+        <div class="ledger-list" id="ledgerList"></div>
+      </div>
+
+      <!-- TEAM -->
+      <div class="view" id="view-team">
+        <div class="panel" style="margin-bottom:18px;" id="addTeamPanel">
+          <div class="panel-title">Add team member</div>
+          <div class="panel-desc">Admin-only. New accounts get a bcrypt-hashed password — never stored in plain text.</div>
+          <form id="addTeamForm">
+            <div class="form-row">
+              <div class="form-group"><label>Full name</label><input type="text" id="tm_name" required></div>
+              <div class="form-group"><label>Username</label><input type="text" id="tm_username" required autocomplete="off"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email (optional)</label><input type="email" id="tm_email"></div>
+              <div class="form-group"><label>Role</label><select id="tm_role"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+            </div>
+            <div class="form-group"><label>Temporary password (min 8 chars)</label><input type="password" id="tm_password" minlength="8" required></div>
+            <div class="modal-actions" style="justify-content:flex-start;">
+              <button type="submit" class="btn btn-primary">Create Account</button>
+            </div>
+          </form>
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar"><div style="font-size:13px; color:var(--text-400);" id="teamCountLabel">0 team members</div></div>
+          <div id="teamList"></div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div class="view" id="view-pipeline">
+        <div class="kanban" id="kanbanBoard"></div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="view" id="view-clients">
+        <div class="table-card">
+          <div class="table-toolbar"><div style="font-size:13px; color:var(--text-400);" id="clientsCountLabel">0 clients</div></div>
+          <table>
+            <thead><tr><th>Client</th><th>Contact</th><th>Projects</th><th>Since</th><th></th></tr></thead>
+            <tbody id="clientsTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="clientsEmpty" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/></svg>
+            <div class="empty-state-title">No clients yet</div>
+            <div>Add your first client account to get started.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="view" id="view-projects">
+        <div class="table-card">
+          <div class="table-toolbar"><div style="font-size:13px; color:var(--text-400);" id="projectsCountLabel">0 projects</div></div>
+          <table>
+            <thead><tr><th>Project</th><th>Client</th><th>Status</th><th>Progress</th><th>Deadline</th><th></th></tr></thead>
+            <tbody id="projectsTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="projectsEmpty" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+            <div class="empty-state-title">No projects yet</div>
+            <div>Create a project once a deal is won.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TICKETS -->
+      <div class="view" id="view-tickets">
+        <div class="table-card">
+          <div class="table-toolbar"><div style="font-size:13px; color:var(--text-400);" id="ticketsCountLabel">0 tickets</div></div>
+          <table>
+            <thead><tr><th>Subject</th><th>Client</th><th>Priority</th><th>Status</th><th>Opened</th><th></th></tr></thead>
+            <tbody id="ticketsTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="ticketsEmpty" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v6a3 3 0 000 6v2H4v-2a3 3 0 000-6V5z"/></svg>
+            <div class="empty-state-title">No support tickets</div>
+            <div>Log a ticket when a client needs help.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastMsg">Saved</span>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

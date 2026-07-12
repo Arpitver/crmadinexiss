@@ -1,0 +1,8 @@
+# Belt-and-suspenders: deny all direct web access to this folder,
+# regardless of whether the root .htaccess RedirectMatch is honored
+# by this specific hosting environment.
+Require all denied
+
+# For older Apache (2.2) hosts that don't support "Require all denied":
+Order deny,allow
+Deny from all
